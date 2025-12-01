@@ -22,68 +22,43 @@
         :root {
             --bg-body: #F8FAFC;
             --text-primary: #0F172A;
-            --accent-primary: #6366F1; /* Indigo Moderno */
-            --accent-secondary: #8B5CF6; /* Roxo AI */
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.5);
+            --accent-primary: #6366F1;
+            --accent-secondary: #8B5CF6;
         }
 
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-primary); -webkit-font-smoothing: antialiased; }
 
-        /* Scrollbar */
+        /* Utilitários */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
-
-        /* Animações e Transições */
-        .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .card-hover { transition: all 0.3s ease; }
-        .card-hover:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        /* Edição de Texto */
+        [contenteditable="true"] { outline: none; transition: all 0.2s; border: 1px dashed transparent; cursor: text; }
+        [contenteditable="true"]:hover { border-color: #cbd5e1; background-color: rgba(255,255,255,0.5); }
+        [contenteditable="true"]:focus { background-color: #fff; border-color: var(--accent-primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); border-style: solid; border-radius: 4px; }
+        [contenteditable="true"]:empty:before { content: attr(data-placeholder); color: #94a3b8; font-style: italic; }
 
         /* AI Elements */
         .ai-gradient { background: linear-gradient(135deg, #6366F1 0%, #A855F7 100%); }
-        .ai-text { background: linear-gradient(135deg, #6366F1 0%, #A855F7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .ai-border { position: relative; }
-        .ai-border::before { content: ''; position: absolute; inset: 0; padding: 2px; border-radius: inherit; background: linear-gradient(135deg, #6366F1, #A855F7); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask-composite: exclude; pointer-events: none; opacity: 0.5; }
-
-        /* Floating AI Chat */
-        .ai-assistant-btn {
-            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
-            border-radius: 50%; background: var(--text-primary); color: white;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4); cursor: pointer; z-index: 50;
-            transition: transform 0.2s;
-        }
-        .ai-assistant-btn:hover { transform: scale(1.1); }
-        
         .ai-chat-window {
             position: fixed; bottom: 100px; right: 30px; width: 350px; height: 500px;
             background: white; border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            z-index: 49; display: none; flex-direction: column; overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.8); backdrop-filter: blur(10px);
+            z-index: 50; display: none; flex-direction: column; overflow: hidden;
+            border: 1px solid #e2e8f0;
         }
         .ai-chat-window.open { display: flex; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Contenteditable */
-        [contenteditable="true"]:focus { outline: none; background-color: #F1F5F9; border-radius: 4px; padding: 0 4px; }
         
-        /* Sidebar Active */
         .nav-item.active { background-color: #EEF2FF; color: var(--accent-primary); border-right: 3px solid var(--accent-primary); font-weight: 600; }
-
+        
         /* Calendar */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-        .calendar-day { min-height: 100px; border-radius: 12px; transition: all 0.2s; cursor: pointer; border: 1px solid #E2E8F0; background: white; }
-        .calendar-day:hover { border-color: var(--accent-primary); }
-        .calendar-day.today { border: 2px solid var(--accent-primary); background-color: #EEF2FF; }
-
-        /* Progress Bars */
-        .progress-bar-bg { background-color: #E2E8F0; border-radius: 999px; overflow: hidden; }
-        .progress-bar-fill { height: 100%; border-radius: 999px; transition: width 0.6s ease-out; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .calendar-day { min-height: 80px; border-radius: 8px; border: 1px solid #E2E8F0; background: white; padding: 4px; font-size: 0.8rem; }
+        .calendar-day.today { border: 2px solid var(--accent-primary); background-color: #F5F3FF; }
     </style>
 </head>
 <body class="h-screen flex overflow-hidden">
@@ -92,32 +67,23 @@
     <nav class="w-20 md:w-64 bg-white border-r border-slate-200 flex flex-col justify-between flex-shrink-0 z-20 shadow-sm">
         <div>
             <div class="h-20 flex items-center justify-center md:justify-start md:px-6 border-b border-slate-100">
-                <div class="w-10 h-10 rounded-xl ai-gradient text-white flex items-center justify-center text-xl font-bold shadow-lg shadow-indigo-200">
-                    <i class="fas fa-brain"></i>
-                </div>
+                <div class="w-10 h-10 rounded-xl ai-gradient text-white flex items-center justify-center text-xl font-bold shadow-lg shadow-indigo-200"><i class="fas fa-brain"></i></div>
                 <span class="ml-3 font-bold text-xl hidden md:block tracking-tight text-slate-800">LifeOS <span class="text-xs text-indigo-500 align-top">AI</span></span>
             </div>
-
-            <ul class="flex flex-col py-6 space-y-1 px-2">
+            <ul class="flex flex-col py-6 space-y-1 px-2 overflow-y-auto max-h-[calc(100vh-180px)]">
                 <li><button onclick="switchTab('dashboard')" class="nav-item w-full flex items-center p-3 rounded-lg text-slate-500 hover:bg-slate-50 transition active" id="btn-dashboard"><i class="ph ph-squares-four text-xl"></i><span class="ml-3 hidden md:block">Visão Geral</span></button></li>
                 <li><button onclick="switchTab('daily')" class="nav-item w-full flex items-center p-3 rounded-lg text-slate-500 hover:bg-slate-50 transition" id="btn-daily"><i class="ph ph-sun text-xl"></i><span class="ml-3 hidden md:block">Agenda do Dia</span></button></li>
-                <li><button onclick="switchTab('weekly')" class="nav-item w-full flex items-center p-3 rounded-lg text-slate-500 hover:bg-slate-50 transition" id="btn-weekly"><i class="ph ph-calendar-blank text-xl"></i><span class="ml-3 hidden md:block">Semana</span></button></li>
-                <li><button onclick="switchTab('monthly')" class="nav-item w-full flex items-center p-3 rounded-lg text-slate-500 hover:bg-slate-50 transition" id="btn-monthly"><i class="ph ph-calendar text-xl"></i><span class="ml-3 hidden md:block">Mês</span></button></li>
-                <!-- NOVA ABA DE METAS -->
                 <li><button onclick="switchTab('goals')" class="nav-item w-full flex items-center p-3 rounded-lg text-slate-500 hover:bg-slate-50 transition" id="btn-goals"><i class="ph ph-target text-xl"></i><span class="ml-3 hidden md:block">Metas Globais</span></button></li>
-                
-                <li class="pt-4 pb-2"><div class="text-xs font-bold text-slate-400 uppercase px-3 hidden md:block">Áreas</div></li>
-                
                 <li><button onclick="switchTab('finances')" class="nav-item w-full flex items-center p-3 rounded-lg text-slate-500 hover:bg-slate-50 transition" id="btn-finances"><i class="ph ph-currency-dollar text-xl"></i><span class="ml-3 hidden md:block">Finanças</span></button></li>
                 <li><button onclick="switchTab('study')" class="nav-item w-full flex items-center p-3 rounded-lg text-slate-500 hover:bg-slate-50 transition" id="btn-study"><i class="ph ph-student text-xl"></i><span class="ml-3 hidden md:block">Nexus Estudos</span></button></li>
                 <li><button onclick="switchTab('routine')" class="nav-item w-full flex items-center p-3 rounded-lg text-slate-500 hover:bg-slate-50 transition" id="btn-routine"><i class="ph ph-check-circle text-xl"></i><span class="ml-3 hidden md:block">Hábitos</span></button></li>
             </ul>
         </div>
-        
         <div class="p-4 border-t border-slate-100">
             <button onclick="exportData()" class="flex items-center text-xs text-slate-400 hover:text-indigo-600 transition"><i class="ph ph-download mr-2"></i> <span class="hidden md:inline">Backup</span></button>
             <input type="file" id="import-file" class="hidden" onchange="importData(this)">
             <label for="import-file" class="flex items-center text-xs text-slate-400 hover:text-indigo-600 transition mt-2 cursor-pointer"><i class="ph ph-upload mr-2"></i> <span class="hidden md:inline">Restaurar</span></label>
+            <button onclick="hardReset()" class="flex items-center text-xs text-red-400 hover:text-red-600 transition mt-2 cursor-pointer"><i class="ph ph-trash mr-2"></i> <span class="hidden md:inline">Resetar</span></button>
         </div>
     </nav>
 
@@ -125,65 +91,65 @@
     <main class="flex-1 overflow-hidden bg-[#F8FAFC] relative">
         <div class="h-full overflow-y-auto p-4 md:p-8 pb-32">
             
-            <!-- HEADER COMUM -->
             <header class="flex justify-between items-center mb-8">
                 <div>
-                    <h1 class="text-2xl font-bold text-slate-800" id="header-title">Olá!</h1>
+                    <!-- EDITÁVEL: Nome do Usuário -->
+                    <h1 class="text-2xl font-bold text-slate-800 outline-none flex items-center gap-2">
+                        <span contenteditable="true" id="user-greeting" onblur="saveTextData()">Olá!</span>
+                        <span class="text-lg">👋</span>
+                    </h1>
                     <p class="text-slate-500 text-sm flex items-center gap-2">
                         <span id="current-date"></span>
-                        <span class="bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded text-xs font-bold border border-indigo-100 flex items-center gap-1">
-                            <i class="fas fa-bolt"></i> LifeAI Ativo
-                        </span>
                     </p>
-                </div>
-                <div class="flex gap-3">
-                    <!-- Status de Produtividade (Simulado) -->
-                    <div class="hidden md:flex flex-col items-end">
-                        <span class="text-xs text-slate-400 uppercase font-bold">Produtividade</span>
-                        <div class="flex items-center gap-1 text-green-600 font-bold text-sm"><i class="fas fa-chart-line"></i> Alta</div>
-                    </div>
                 </div>
             </header>
 
             <!-- 1. DASHBOARD -->
             <section id="dashboard" class="tab-content active">
-                <!-- AI Insight Banner -->
+                <!-- AI INSIGHT MELHORADO -->
                 <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-6 text-white mb-8 shadow-lg relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 opacity-10 transform translate-x-10 -translate-y-10"><i class="fas fa-brain text-9xl"></i></div>
-                    <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><i class="fas fa-lightbulb text-yellow-300"></i> Insight do Dia</h2>
-                    <p id="ai-daily-insight" class="text-indigo-100 text-lg font-light max-w-2xl">Carregando análise da sua rotina...</p>
-                    <button onclick="LifeAI.generateInsight()" class="mt-4 bg-white/20 hover:bg-white/30 text-white px-4 py-1.5 rounded-full text-xs font-medium transition backdrop-blur-sm">Gerar Novo Insight</button>
+                    <!-- Fundo decorativo -->
+                    <div class="absolute -right-10 -top-10 text-white opacity-5 text-9xl rotate-12"><i class="fas fa-brain"></i></div>
+                    
+                    <h2 class="text-sm font-bold mb-3 flex items-center gap-2 uppercase tracking-wider text-indigo-200">
+                        <i class="fas fa-sparkles text-yellow-300"></i> Insight do Dia
+                    </h2>
+                    
+                    <p id="ai-daily-insight" class="text-white text-xl md:text-2xl font-medium leading-relaxed max-w-3xl">
+                        Carregando sua análise diária...
+                    </p>
+                    
+                    <div class="mt-6 flex gap-3">
+                        <button onclick="LifeAI.generateInsight()" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg text-xs font-bold transition backdrop-blur-sm flex items-center gap-2">
+                            <i class="fas fa-sync-alt"></i> Novo Insight
+                        </button>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Foco do Dia -->
                     <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="font-bold text-slate-700 flex items-center gap-2"><i class="ph ph-target text-indigo-500"></i> Foco Principal</h3>
-                            <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded">Prioridade Máxima</span>
                         </div>
-                        <div class="space-y-4" id="dash-focus-list">
-                            <!-- Injetado via JS -->
-                        </div>
-                        <button onclick="switchTab('daily')" class="w-full mt-4 text-center text-sm text-indigo-500 hover:text-indigo-700 font-medium py-2 border border-dashed border-indigo-200 rounded-lg hover:bg-indigo-50 transition">Gerenciar Tarefas do Dia</button>
+                        <!-- EDITÁVEL: Lista de Foco Livre -->
+                        <div id="dash-focus-notes" contenteditable="true" class="w-full min-h-[120px] text-lg text-slate-700 bg-slate-50 p-6 rounded-xl border border-slate-100 focus:bg-white focus:ring-2 focus:ring-indigo-100 focus:border-indigo-200 leading-relaxed" data-placeholder="Qual é a única coisa que, se feita hoje, tornará todo o resto mais fácil? Escreva aqui..."></div>
                     </div>
 
-                    <!-- Resumo Rápido -->
                     <div class="space-y-6">
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                            <h3 class="font-bold text-slate-700 mb-4 flex items-center gap-2"><i class="ph ph-chart-pie-slice text-purple-500"></i> Balanceamento</h3>
-                            <div class="space-y-4">
+                            <h3 class="font-bold text-slate-700 mb-4">Progresso Geral</h3>
+                            <div class="space-y-5">
                                 <div>
-                                    <div class="flex justify-between text-xs text-slate-500 mb-1"><span>Estudos</span><span>65%</span></div>
-                                    <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-purple-500 h-2 rounded-full" style="width: 65%"></div></div>
+                                    <div class="flex justify-between text-xs text-slate-500 mb-1 font-medium"><span>METAS DE ESTUDO</span><span class="text-purple-600">65%</span></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden"><div class="bg-purple-500 h-2.5 rounded-full" style="width: 65%"></div></div>
                                 </div>
                                 <div>
-                                    <div class="flex justify-between text-xs text-slate-500 mb-1"><span>Metas Financeiras</span><span>40%</span></div>
-                                    <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-green-500 h-2 rounded-full" style="width: 40%"></div></div>
+                                    <div class="flex justify-between text-xs text-slate-500 mb-1 font-medium"><span>CONTROLE FINANCEIRO</span><span class="text-green-600">80%</span></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden"><div class="bg-green-500 h-2.5 rounded-full" style="width: 80%"></div></div>
                                 </div>
                                 <div>
-                                    <div class="flex justify-between text-xs text-slate-500 mb-1"><span>Hábitos</span><span>80%</span></div>
-                                    <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-blue-500 h-2 rounded-full" style="width: 80%"></div></div>
+                                    <div class="flex justify-between text-xs text-slate-500 mb-1 font-medium"><span>HÁBITOS SAUDÁVEIS</span><span class="text-blue-600">40%</span></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden"><div class="bg-blue-500 h-2.5 rounded-full" style="width: 40%"></div></div>
                                 </div>
                             </div>
                         </div>
@@ -191,174 +157,120 @@
                 </div>
             </section>
 
-            <!-- 2. DAILY AGENDA COM METAS SMART -->
+            <!-- 2. DAILY AGENDA -->
             <section id="daily" class="tab-content">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Coluna Esquerda: Metas do Dia (AI) -->
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-fit">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="font-bold text-slate-700">Metas do Dia</h3>
-                            <button onclick="LifeAI.suggestDailyGoals()" class="text-xs ai-gradient text-white px-2 py-1 rounded shadow-sm hover:opacity-90 transition"><i class="fas fa-magic mr-1"></i> Sugerir</button>
+                            <button onclick="LifeAI.suggestDailyGoals()" class="text-xs ai-gradient text-white px-3 py-1.5 rounded-lg shadow-sm hover:opacity-90 transition font-medium flex items-center gap-1"><i class="fas fa-magic"></i> Sugerir</button>
                         </div>
-                        <div id="daily-goals-container" class="space-y-3">
-                            <!-- Metas Smart Inseridas Aqui -->
-                        </div>
-                        <button onclick="addDailyGoal()" class="mt-4 w-full text-xs text-slate-400 hover:text-indigo-500 border border-dashed border-slate-200 p-2 rounded hover:border-indigo-300 transition">+ Adicionar Meta</button>
+                        <div id="daily-goals-container" class="space-y-3"></div>
+                        <button onclick="addDailyGoal()" class="mt-4 w-full text-xs text-slate-500 border border-dashed border-slate-300 bg-slate-50 p-3 rounded-lg hover:border-indigo-400 hover:text-indigo-600 transition font-medium">+ Adicionar Meta Rápida</button>
                     </div>
 
-                    <!-- Coluna Direita: Tarefas e Agenda -->
                     <div class="lg:col-span-2 space-y-6">
-                        <!-- AI Alert Box -->
-                        <div id="daily-ai-alert" class="hidden bg-orange-50 border border-orange-100 p-3 rounded-lg flex items-start gap-3 text-sm text-orange-800">
-                            <i class="fas fa-exclamation-triangle mt-0.5"></i>
-                            <div>
-                                <span class="font-bold">Atenção:</span> <span id="daily-ai-msg">Sua carga horária parece excessiva. A IA sugere adiar 1 tarefa não essencial.</span>
-                            </div>
-                        </div>
-
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                             <h3 class="font-bold text-slate-700 mb-4">Lista de Tarefas</h3>
                             <div id="task-list" class="space-y-2"></div>
                             <div class="flex gap-2 mt-4">
-                                <input type="text" id="new-task-input" placeholder="Nova tarefa..." class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-100 outline-none">
-                                <button onclick="addTask()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition"><i class="fas fa-plus"></i></button>
+                                <input type="text" id="new-task-input" placeholder="O que precisa ser feito?" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-50 transition">
+                                <button onclick="addTask()" class="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 font-bold transition"><i class="fas fa-plus"></i></button>
                             </div>
                         </div>
                         
+                        <!-- EDITÁVEL: Notas do Dia -->
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                            <h3 class="font-bold text-slate-700 mb-2">Notas Rápidas</h3>
-                            <div id="daily-notes" contenteditable="true" class="w-full min-h-[100px] text-sm text-slate-600 bg-slate-50 p-4 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-50 outline-none" data-placeholder="Ideias, lembretes..."></div>
+                            <h3 class="font-bold text-slate-700 mb-2">Notas & Brainstorm</h3>
+                            <div id="daily-notes" contenteditable="true" class="w-full min-h-[150px] text-sm text-slate-600 bg-slate-50 p-4 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-50 outline-none leading-relaxed" data-placeholder="Use este espaço para esvaziar a mente..."></div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- 3. METAS GLOBAIS (NOVO) -->
+            <!-- 3. METAS GLOBAIS -->
             <section id="goals" class="tab-content">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold text-slate-800">Painel de Metas & Objetivos</h2>
-                    <button onclick="LifeAI.analyzeGoals()" class="bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-100 transition"><i class="fas fa-chart-network mr-2"></i>Análise de Conflitos (AI)</button>
+                    <h2 class="text-xl font-bold text-slate-800">Painel de Metas</h2>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="global-goals-grid">
-                    <!-- Cards de Metas gerados via JS -->
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="global-goals-grid"></div>
             </section>
 
-            <!-- 4. NEXUS ESTUDOS (ATUALIZADO) -->
+            <!-- 4. NEXUS ESTUDOS -->
             <section id="study" class="tab-content">
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-150px)]">
-                    <!-- Sidebar Interna Nexus -->
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex flex-col gap-2">
                         <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nexus v3.0</div>
                         <button onclick="renderNexusDashboard()" class="text-left px-4 py-2 rounded-lg bg-indigo-50 text-indigo-700 font-medium text-sm">Dashboard</button>
-                        <button onclick="renderNexusLibrary()" class="text-left px-4 py-2 rounded-lg hover:bg-slate-50 text-slate-600 text-sm transition">Biblioteca</button>
-                        <button onclick="openFlashcardModal()" class="text-left px-4 py-2 rounded-lg hover:bg-slate-50 text-slate-600 text-sm transition flex items-center justify-between">Flashcards <span class="bg-purple-100 text-purple-600 text-[10px] px-1.5 py-0.5 rounded">AI</span></button>
-                        
                         <div class="mt-auto bg-slate-50 p-4 rounded-xl text-center">
                             <div class="text-3xl font-mono font-bold text-slate-700 mb-2" id="nexus-timer">25:00</div>
                             <button onclick="toggleStudyTimer()" id="nexus-timer-btn" class="w-full bg-slate-800 text-white py-2 rounded-lg text-sm hover:bg-black transition">Focar</button>
                         </div>
                     </div>
-
-                    <!-- Área Principal Nexus -->
-                    <div class="lg:col-span-3 bg-white rounded-2xl shadow-sm border border-slate-100 p-6 overflow-y-auto relative">
-                        <div id="nexus-content-area">
-                            <!-- Conteúdo dinâmico aqui -->
-                        </div>
+                    <div class="lg:col-span-3 bg-white rounded-2xl shadow-sm border border-slate-100 p-6 overflow-y-auto">
+                        <div id="nexus-content-area"></div>
                     </div>
                 </div>
             </section>
 
-            <!-- 5. FINANÇAS (COM PREVISÃO AI) -->
+            <!-- 5. FINANÇAS -->
             <section id="finances" class="tab-content">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100"><p class="text-xs text-slate-400 font-bold uppercase">Saldo</p><h3 class="text-2xl font-bold text-slate-800 mt-1" id="fin-balance">R$ 0,00</h3></div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100"><p class="text-xs text-slate-400 font-bold uppercase">Saldo (Calculado)</p><h3 class="text-2xl font-bold text-slate-800 mt-1" id="fin-balance">R$ 0,00</h3></div>
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100"><p class="text-xs text-green-500 font-bold uppercase">Entradas</p><h3 class="text-2xl font-bold text-green-600 mt-1" id="fin-income">R$ 0,00</h3></div>
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100"><p class="text-xs text-red-500 font-bold uppercase">Saídas</p><h3 class="text-2xl font-bold text-red-600 mt-1" id="fin-expense">R$ 0,00</h3></div>
                 </div>
-
-                <!-- AI Prediction Box -->
-                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-8 flex items-start gap-4">
-                    <div class="bg-white p-2 rounded-full text-indigo-600 shadow-sm"><i class="fas fa-robot"></i></div>
-                    <div>
-                        <h4 class="font-bold text-indigo-900 text-sm">Previsão Financeira AI</h4>
-                        <p class="text-sm text-indigo-700 mt-1" id="fin-ai-prediction">Analisando gastos... Adicione transações para gerar previsões.</p>
-                    </div>
+                <!-- EDITÁVEL: Anotações Financeiras -->
+                <div class="mb-8">
+                    <div id="fin-notes" contenteditable="true" class="w-full bg-yellow-50 border border-yellow-100 p-4 rounded-xl text-sm text-yellow-900 leading-relaxed focus:bg-white focus:ring-2 focus:ring-yellow-200 outline-none" data-placeholder="Nota rápida sobre finanças (ex: Pagar boleto dia 20)..."></div>
                 </div>
-
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- Transaction Form & List -->
                     <div class="space-y-6">
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                             <h3 class="font-bold text-slate-700 mb-4">Nova Transação</h3>
                             <div class="grid grid-cols-2 gap-3 mb-3">
-                                <select id="trans-type" class="p-2 border border-slate-200 rounded-lg text-sm bg-slate-50"><option value="expense">Saída</option><option value="income">Entrada</option></select>
-                                <input type="number" id="trans-val" placeholder="Valor" class="p-2 border border-slate-200 rounded-lg text-sm bg-slate-50">
+                                <select id="trans-type" class="p-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:border-indigo-300 outline-none"><option value="expense">Saída</option><option value="income">Entrada</option></select>
+                                <input type="number" id="trans-val" placeholder="Valor" class="p-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:border-indigo-300 outline-none">
                             </div>
-                            <input type="text" id="trans-desc" placeholder="Descrição (ex: Mercado)" class="w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50 mb-3">
+                            <input type="text" id="trans-desc" placeholder="Descrição (ex: Supermercado)" class="w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50 mb-3 focus:border-indigo-300 outline-none">
                             <button onclick="addTransaction()" class="w-full bg-slate-800 text-white py-2 rounded-lg text-sm hover:bg-black transition">Registrar</button>
                         </div>
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                             <h3 class="font-bold text-slate-700 mb-4">Histórico</h3>
-                            <div id="transaction-list" class="space-y-2 max-h-64 overflow-y-auto"></div>
+                            <div id="transaction-list" class="space-y-2 max-h-64 overflow-y-auto pr-2"></div>
                         </div>
                     </div>
-                    <!-- Analysis -->
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                        <h3 class="font-bold text-slate-700 mb-4">Análise por Categoria</h3>
-                        <div id="fin-categories" class="space-y-4"></div>
-                    </div>
                 </div>
             </section>
 
-            <!-- 6. OUTRAS ABAS (Monthly, Routine, Weekly) - Mantidas simplificadas para caber -->
-            <section id="monthly" class="tab-content">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                    <div class="flex justify-between items-center mb-6"><h2 class="text-xl font-bold text-slate-800" id="cal-title">Mês</h2><div class="flex gap-2"><button onclick="changeMonth(-1)" class="p-2 hover:bg-slate-100 rounded"><i class="fas fa-chevron-left"></i></button><button onclick="changeMonth(1)" class="p-2 hover:bg-slate-100 rounded"><i class="fas fa-chevron-right"></i></button></div></div>
-                    <div class="calendar-grid" id="calendar-grid"></div>
-                </div>
-            </section>
-            
-            <section id="weekly" class="tab-content">
-                <div class="flex justify-between mb-6">
-                    <h2 class="text-xl font-bold text-slate-800">Planejamento Semanal</h2>
-                    <button onclick="LifeAI.analyzeWeek()" class="text-xs bg-purple-50 text-purple-600 px-3 py-1 rounded hover:bg-purple-100"><i class="fas fa-magic mr-1"></i> Analisar Semana</button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="weekly-cards"></div>
-            </section>
-
+            <!-- 6. OUTRAS ABAS -->
             <section id="routine" class="tab-content">
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                    <h2 class="text-xl font-bold text-slate-800 mb-6">Rastreador de Hábitos</h2>
-                    <div id="habit-tracker-container"></div>
-                    <button onclick="addHabit()" class="mt-4 text-sm text-indigo-600 font-medium">+ Novo Hábito</button>
+                    <h2 class="text-xl font-bold text-slate-800 mb-6">Hábitos</h2>
+                    <div id="habit-list"></div>
+                    <button onclick="addHabit()" class="mt-4 text-sm text-indigo-600 font-bold hover:underline">+ Novo Hábito</button>
                 </div>
             </section>
 
         </div>
     </main>
 
-    <!-- AI CHAT BUBBLE -->
-    <div class="ai-assistant-btn ai-gradient" onclick="toggleAIChat()">
-        <i class="fas fa-robot text-2xl"></i>
+    <!-- AI CHAT -->
+    <div class="fixed bottom-8 right-8 w-14 h-14 bg-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:bg-indigo-700 transition z-50 hover:scale-110 duration-200" onclick="toggleAIChat()">
+        <i class="fas fa-robot text-xl"></i>
     </div>
 
-    <!-- AI CHAT WINDOW -->
     <div class="ai-chat-window" id="ai-chat-window">
         <div class="bg-slate-900 text-white p-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
-                <span class="font-bold text-sm">LifeOS Assistant</span>
-            </div>
-            <button onclick="toggleAIChat()" class="text-slate-400 hover:text-white"><i class="fas fa-times"></i></button>
+            <span class="font-bold text-sm flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div> LifeOS AI</span>
+            <button onclick="toggleAIChat()" class="hover:text-slate-300"><i class="fas fa-times"></i></button>
         </div>
         <div class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50" id="ai-chat-messages">
-            <div class="flex justify-start"><div class="bg-white border border-slate-200 text-slate-700 p-3 rounded-2xl rounded-tl-none text-sm max-w-[85%] shadow-sm">Olá! Sou sua IA pessoal. Analisei seus dados locais. Como posso ajudar a organizar seu dia hoje?</div></div>
+            <div class="flex justify-start"><div class="bg-white p-3 rounded-2xl rounded-tl-none text-sm shadow-sm text-slate-700 border border-slate-100">Olá! Como posso ajudar a organizar seu dia?</div></div>
         </div>
         <div class="p-3 bg-white border-t border-slate-200">
             <form onsubmit="handleAIChat(event)" class="flex gap-2">
-                <input type="text" id="ai-chat-input" placeholder="Pergunte algo..." class="flex-1 bg-slate-100 border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-100 outline-none">
+                <input type="text" id="ai-chat-input" placeholder="Digite..." class="flex-1 bg-slate-100 border-none rounded-full px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-100">
                 <button type="submit" class="bg-indigo-600 text-white w-9 h-9 rounded-full flex items-center justify-center hover:bg-indigo-700"><i class="fas fa-paper-plane text-xs"></i></button>
             </form>
         </div>
@@ -366,63 +278,60 @@
 
     <!-- SCRIPTS -->
     <script>
-        const DB_KEY = 'LifeOS_Ultimate_DB';
+        const DB_KEY = 'LifeOS_Ultimate_Fix_v2';
         
-        // --- ESTRUTURA DE DADOS ROBUSTA ---
         let db = {
-            tasks: [], // {id, text, done, date}
-            goals: { daily: [], weekly: [], monthly: [], global: [] },
-            finances: { transactions: [], budget: 2000 },
-            nexus: { sessions: [], flashcards: [], xp: 0, level: 1 },
+            tasks: [],
+            goals: { daily: [], global: [] },
+            finances: { transactions: [] },
+            nexus: { sessions: [], xp: 0, level: 1 },
             habits: [],
-            settings: { theme: 'light', aiLevel: 'high' }
+            textContent: {}
         };
 
-        // --- LIFE AI ENGINE (MOCK LOGIC) ---
+        // --- LIFE AI ENGINE 2.0 (MELHORADO) ---
         const LifeAI = {
             generateInsight: () => {
-                const msgs = [
-                    "Notei que você completa mais tarefas pela manhã. Tente agendar o 'Deep Work' para as 9h.",
-                    "Sua categoria 'Lazer' nas finanças está baixa este mês. Não esqueça de descansar!",
-                    "Você revisou 3 matérias esta semana. Ótimo ritmo! Mantenha a constância.",
-                    "Sua taxa de conclusão de hábitos é de 85%. Excelente!",
-                    "Previsão: Com o ritmo atual, você baterá sua meta de leitura em 4 dias."
-                ];
-                const msg = msgs[Math.floor(Math.random() * msgs.length)];
+                const hour = new Date().getHours();
+                let category = "general";
+                
+                if (hour < 12) category = "morning";
+                else if (hour < 18) category = "afternoon";
+                else category = "evening";
+
+                const insightsDB = {
+                    morning: [
+                        "☀️ Bom dia! 'A melhor maneira de prever o futuro é criá-lo'. Revise suas metas hoje.",
+                        "🚀 Foco matinal: Ataque a tarefa mais difícil primeiro (Eat the Frog).",
+                        "☕ Comece o dia organizando sua lista. Clareza gera velocidade."
+                    ],
+                    afternoon: [
+                        "⚡ Energia pós-almoço: Se estiver cansado, faça 5 min de pausa ativa.",
+                        "🧠 Lembrete: Multitarefa reduz o QI. Foque em uma coisa de cada vez.",
+                        "💧 Já bebeu água hoje? Hidratação melhora o foco cognitivo."
+                    ],
+                    evening: [
+                        "🌙 O dia está acabando. O que você aprendeu hoje?",
+                        "🧘 Desacelere. Prepare sua lista de amanhã para dormir tranquilo.",
+                        "✨ Pequenos progressos diários somam grandes resultados. Bom descanso."
+                    ],
+                    general: [
+                        "💡 Dica Financeira: Regra 50/30/20 ajuda a equilibrar o orçamento.",
+                        "📚 Estudo Ativo: Tente explicar o que aprendeu para uma criança (Feynman).",
+                        "🌱 Hábito é repetição. Não quebre a corrente!"
+                    ]
+                };
+
+                const pool = [...insightsDB[category], ...insightsDB.general];
+                const msg = pool[Math.floor(Math.random() * pool.length)];
+                
                 document.getElementById('ai-daily-insight').innerText = msg;
             },
-            
             suggestDailyGoals: () => {
-                const suggestions = [
-                    {text: "Revisar Finanças da Semana", type: "admin"},
-                    {text: "Ler 20 páginas (Hábito)", type: "study"},
-                    {text: "Organizar mesa de trabalho", type: "routine"},
-                    {text: "Zero Inbox", type: "work"}
-                ];
-                const pick = suggestions.sort(() => 0.5 - Math.random()).slice(0, 2);
-                pick.forEach(g => {
-                    db.goals.daily.push({id: Date.now() + Math.random(), text: g.text, done: false, type: g.type});
-                });
-                saveDB();
-                renderDaily();
-            },
-
-            analyzeFinances: () => {
-                const totalExp = db.finances.transactions.filter(t => t.type === 'expense').reduce((a,b) => a + b.val, 0);
-                const ratio = totalExp / db.finances.budget;
-                let msg = "Gastos dentro do normal.";
-                if(ratio > 0.8) msg = "⚠️ Alerta: Você já consumiu 80% do orçamento mensal!";
-                else if(ratio < 0.3 && new Date().getDate() > 20) msg = "🤑 Ótimo controle! Sobra de caixa prevista.";
-                document.getElementById('fin-ai-prediction').innerText = msg;
-            },
-
-            generateFlashcards: (topic) => {
-                // Mock generator
-                return [
-                    {q: `O que é ${topic}?`, a: "Definição do conceito chave."},
-                    {q: "Quais os 3 pilares principais?", a: "Pilar 1, 2 e 3."},
-                    {q: "Como aplicar na prática?", a: "Exemplo prático de uso."}
-                ];
+                const ideas = ["Revisar e-mails", "Leitura de 15min", "Organizar arquivos", "Planejamento Financeiro", "Estudar 1 Pomodoro"];
+                const pick = ideas[Math.floor(Math.random() * ideas.length)];
+                db.goals.daily.push({id: Date.now(), text: pick, done: false});
+                saveDB(); renderDaily();
             }
         };
 
@@ -432,24 +341,41 @@
             updateDate();
             renderDashboard();
             LifeAI.generateInsight();
-            
-            // Auto-save loop
-            setInterval(saveDB, 30000); 
+            setupAutoSave();
         }
 
         function loadDB() {
             const saved = localStorage.getItem(DB_KEY);
-            if(saved) db = { ...db, ...JSON.parse(saved) };
+            if(saved) {
+                db = { ...db, ...JSON.parse(saved) };
+                if(db.textContent) {
+                    for (const [id, text] of Object.entries(db.textContent)) {
+                        const el = document.getElementById(id);
+                        if (el) el.innerHTML = text;
+                    }
+                }
+            }
         }
 
         function saveDB() {
+            // Salva inputs de texto editável
+            document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+                if(el.id) db.textContent[el.id] = el.innerHTML;
+            });
             localStorage.setItem(DB_KEY, JSON.stringify(db));
-            // Trigger updates if needed
         }
 
+        function setupAutoSave() {
+            document.body.addEventListener('input', (e) => {
+                if (e.target.getAttribute('contenteditable') === 'true') saveDB();
+            });
+        }
+        
+        function saveTextData() { saveDB(); }
+
         function updateDate() {
-            const now = new Date();
-            document.getElementById('current-date').innerText = now.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            document.getElementById('current-date').innerText = new Date().toLocaleDateString('pt-BR', options);
         }
 
         function switchTab(id) {
@@ -459,45 +385,21 @@
             const btn = document.getElementById(`btn-${id}`);
             if(btn) btn.classList.add('active');
 
-            // Render specific tab content
-            if(id === 'dashboard') renderDashboard();
             if(id === 'daily') renderDaily();
             if(id === 'goals') renderGoals();
             if(id === 'finances') renderFinances();
             if(id === 'study') renderNexusDashboard();
-            if(id === 'weekly') renderWeekly();
-            if(id === 'monthly') renderMonthly();
             if(id === 'routine') renderRoutine();
         }
 
         // --- RENDERERS ---
-        function renderDashboard() {
-            const list = document.getElementById('dash-focus-list');
-            list.innerHTML = '';
-            // Get top 3 unfinished daily goals
-            const goals = db.goals.daily.filter(g => !g.done).slice(0, 3);
-            if(goals.length === 0) list.innerHTML = '<p class="text-slate-400 text-sm italic">Nada pendente. Aproveite o dia! ☀️</p>';
-            goals.forEach(g => {
-                list.innerHTML += `
-                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                        <div class="w-2 h-2 rounded-full bg-indigo-500"></div>
-                        <span class="text-sm font-medium text-slate-700">${g.text}</span>
-                    </div>
-                `;
-            });
-        }
+        function renderDashboard() { /* Visual only */ }
 
         function renderDaily() {
             const container = document.getElementById('daily-goals-container');
             container.innerHTML = '';
             db.goals.daily.forEach(g => {
-                container.innerHTML += `
-                    <div class="flex items-center gap-2 group">
-                        <input type="checkbox" ${g.done ? 'checked' : ''} onchange="toggleGoal('daily', ${g.id})" class="accent-indigo-600 rounded">
-                        <input type="text" value="${g.text}" onblur="editGoal('daily', ${g.id}, this.value)" class="flex-1 text-sm bg-transparent border-none focus:bg-slate-50 rounded px-1 ${g.done ? 'line-through text-slate-400' : 'text-slate-700'}">
-                        <button onclick="deleteGoal('daily', ${g.id})" class="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"><i class="fas fa-times"></i></button>
-                    </div>
-                `;
+                container.innerHTML += `<div class="flex items-center gap-3 mb-2 p-2 rounded hover:bg-slate-50 group transition"><input type="checkbox" ${g.done?'checked':''} onchange="toggleGoal('daily',${g.id})" class="accent-indigo-600 w-4 h-4 cursor-pointer"><span class="${g.done?'line-through text-slate-400':'text-slate-700'} text-sm font-medium flex-1">${g.text}</span><button onclick="deleteGoal('daily',${g.id})" class="text-xs text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"><i class="fas fa-trash"></i></button></div>`;
             });
             renderTasks();
         }
@@ -505,247 +407,121 @@
         function renderTasks() {
             const list = document.getElementById('task-list');
             list.innerHTML = '';
-            const today = new Date().toISOString().split('T')[0];
-            const tasks = db.tasks.filter(t => t.date === today || !t.date); // Show today or backlog
-            tasks.forEach(t => {
-                list.innerHTML += `
-                    <div class="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-lg hover:shadow-sm transition group">
-                        <div onclick="toggleTask(${t.id})" class="w-5 h-5 rounded border cursor-pointer flex items-center justify-center ${t.done ? 'bg-indigo-500 border-indigo-500 text-white' : 'border-slate-300'}">
-                            ${t.done ? '<i class="fas fa-check text-xs"></i>' : ''}
-                        </div>
-                        <span class="flex-1 text-sm ${t.done ? 'text-slate-400 line-through' : 'text-slate-700'}">${t.text}</span>
-                        <button onclick="deleteTask(${t.id})" class="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100"><i class="fas fa-trash"></i></button>
-                    </div>
-                `;
+            if(db.tasks.length === 0) list.innerHTML = '<p class="text-slate-400 text-sm italic text-center py-4">Nenhuma tarefa pendente.</p>';
+            db.tasks.forEach(t => {
+                list.innerHTML += `<div class="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-lg mb-2 shadow-sm hover:border-indigo-200 transition group"><input type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${t.id})" class="accent-indigo-600 w-5 h-5 cursor-pointer"><span class="flex-1 text-sm ${t.done?'text-slate-400 line-through':'text-slate-700 font-medium'}">${t.text}</span><button onclick="deleteTask(${t.id})" class="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"><i class="fas fa-trash"></i></button></div>`;
             });
         }
 
         function renderGoals() {
             const grid = document.getElementById('global-goals-grid');
             grid.innerHTML = '';
-            const categories = ['Pessoal', 'Profissional', 'Financeiro'];
-            
-            categories.forEach(cat => {
-                const catGoals = db.goals.global.filter(g => g.category === cat);
-                let itemsHtml = '';
-                catGoals.forEach(g => {
-                    const progress = g.progress || 0;
-                    itemsHtml += `
-                        <div class="mb-3">
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="font-medium text-slate-700">${g.text}</span>
-                                <span class="text-slate-400 text-xs">${progress}%</span>
-                            </div>
-                            <div class="w-full bg-slate-100 rounded-full h-1.5 cursor-pointer hover:h-2 transition-all" onclick="updateGoalProgress(${g.id})">
-                                <div class="bg-indigo-500 h-full rounded-full" style="width: ${progress}%"></div>
-                            </div>
-                        </div>
-                    `;
+            const cats = ['Pessoal', 'Profissional', 'Financeiro'];
+            cats.forEach(cat => {
+                const goals = db.goals.global.filter(g => g.category === cat);
+                let html = `<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-full"><div class="flex justify-between mb-4 items-center"><h3 class="font-bold text-slate-700 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-indigo-500"></div> ${cat}</h3><button onclick="addGlobalGoal('${cat}')" class="text-indigo-500 hover:bg-indigo-50 p-1.5 rounded-md transition"><i class="fas fa-plus"></i></button></div>`;
+                if(goals.length === 0) html += '<p class="text-xs text-slate-400 italic">Sem metas.</p>';
+                goals.forEach(g => {
+                    html += `<div class="mb-4 group"><div class="flex justify-between text-sm mb-1 font-medium text-slate-700"><span>${g.text}</span><span class="text-xs text-indigo-500">${g.progress}%</span></div><div class="w-full bg-slate-100 rounded-full h-2 cursor-pointer relative overflow-hidden" onclick="updateGoalProgress(${g.id})"><div class="bg-indigo-500 h-2 rounded-full transition-all duration-500" style="width: ${g.progress}%"></div></div><button onclick="deleteGlobalGoal(${g.id})" class="text-[10px] text-red-300 hover:text-red-500 mt-1 opacity-0 group-hover:opacity-100 transition">Excluir</button></div>`;
                 });
-
-                grid.innerHTML += `
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 card-hover">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-slate-700">${cat}</h3>
-                            <button onclick="addGlobalGoal('${cat}')" class="text-indigo-500 hover:bg-indigo-50 p-1 rounded"><i class="fas fa-plus"></i></button>
-                        </div>
-                        ${itemsHtml || '<p class="text-xs text-slate-400">Nenhuma meta definida.</p>'}
-                    </div>
-                `;
+                html += `</div>`;
+                grid.innerHTML += html;
             });
         }
 
         function renderFinances() {
-            LifeAI.analyzeFinances();
             const list = document.getElementById('transaction-list');
             list.innerHTML = '';
-            let bal = 0, inc = 0, exp = 0, cats = {};
-            
-            db.finances.transactions.forEach(t => {
-                if(t.type === 'income') { bal += t.val; inc += t.val; }
-                else { bal -= t.val; exp += t.val; cats[t.cat] = (cats[t.cat] || 0) + t.val; }
-                
-                list.innerHTML += `
-                    <div class="flex justify-between items-center p-3 border-b border-slate-50 text-sm">
-                        <span class="text-slate-600">${t.desc}</span>
-                        <span class="font-mono font-medium ${t.type === 'income' ? 'text-green-600' : 'text-red-500'}">
-                            ${t.type === 'income' ? '+' : '-'} R$ ${t.val}
-                        </span>
-                    </div>
-                `;
+            let bal = 0, inc = 0, exp = 0;
+            if(db.finances.transactions.length === 0) list.innerHTML = '<p class="text-slate-400 text-xs italic text-center py-2">Sem transações.</p>';
+            db.finances.transactions.slice().reverse().forEach(t => {
+                if(t.type === 'income') { bal += t.val; inc += t.val; } else { bal -= t.val; exp += t.val; }
+                list.innerHTML += `<div class="flex justify-between p-3 border-b border-slate-50 text-sm hover:bg-slate-50 transition"><span>${t.desc}</span><div class="flex items-center gap-3"><span class="font-mono font-medium ${t.type==='income'?'text-green-600':'text-red-500'}">R$ ${t.val.toFixed(2)}</span><button onclick="deleteTransaction(${t.id})" class="text-xs text-slate-300 hover:text-red-500"><i class="fas fa-times"></i></button></div></div>`;
             });
-
             document.getElementById('fin-balance').innerText = `R$ ${bal.toFixed(2)}`;
             document.getElementById('fin-income').innerText = `R$ ${inc.toFixed(2)}`;
             document.getElementById('fin-expense').innerText = `R$ ${exp.toFixed(2)}`;
-
-            // Render Categories
-            const catContainer = document.getElementById('fin-categories');
-            catContainer.innerHTML = '';
-            Object.keys(cats).forEach(c => {
-                const pct = (cats[c] / exp) * 100;
-                catContainer.innerHTML += `
-                    <div class="mb-2">
-                        <div class="flex justify-between text-xs text-slate-500 mb-1"><span>${c}</span><span>${pct.toFixed(0)}%</span></div>
-                        <div class="w-full bg-slate-100 rounded-full h-1.5"><div class="bg-indigo-400 h-1.5 rounded-full" style="width: ${pct}%"></div></div>
-                    </div>
-                `;
-            });
         }
 
-        // --- NEXUS STUDY LOGIC ---
         function renderNexusDashboard() {
             const area = document.getElementById('nexus-content-area');
-            area.innerHTML = `
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
-                        <h4 class="text-xs font-bold text-indigo-400 uppercase">Nível atual</h4>
-                        <div class="text-2xl font-bold text-indigo-700">Lvl ${db.nexus.level}</div>
-                        <div class="w-full bg-white rounded-full h-1.5 mt-2"><div class="bg-indigo-500 h-1.5 rounded-full" style="width: ${(db.nexus.xp % 100)}%"></div></div>
-                    </div>
-                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-100">
-                        <h4 class="text-xs font-bold text-purple-400 uppercase">Flashcards</h4>
-                        <div class="text-2xl font-bold text-purple-700">${db.nexus.flashcards.length}</div>
-                    </div>
-                </div>
-                <h3 class="font-bold text-slate-700 mb-4">Sessões Recentes</h3>
-                <div class="space-y-3" id="nexus-sessions-list"></div>
-            `;
-            const list = document.getElementById('nexus-sessions-list');
-            if(db.nexus.sessions.length === 0) list.innerHTML = '<p class="text-slate-400 italic text-sm">Nenhuma sessão registrada.</p>';
-            db.nexus.sessions.slice(0,5).forEach(s => {
-                list.innerHTML += `
-                    <div class="p-3 border border-slate-100 rounded-lg flex justify-between items-center bg-slate-50">
-                        <div>
-                            <div class="font-bold text-slate-700 text-sm">${s.topic}</div>
-                            <div class="text-xs text-slate-400">${new Date(s.date).toLocaleDateString()} • ${s.duration} min</div>
-                        </div>
-                        <span class="text-xs px-2 py-1 bg-white rounded border border-slate-200">${s.method}</span>
-                    </div>
-                `;
+            area.innerHTML = `<div class="bg-indigo-50 p-8 rounded-xl border border-indigo-100 text-center"><h3 class="text-indigo-900 font-bold mb-2 text-xl">Painel de Estudos</h3><p class="text-indigo-600 text-sm mb-4">Registre suas sessões para subir de nível.</p><div class="inline-block bg-white px-6 py-2 rounded-full shadow-sm text-indigo-600 font-bold border border-indigo-100">Nível ${db.nexus.level}</div></div>`;
+        }
+
+        function renderRoutine() {
+            const list = document.getElementById('habit-list');
+            list.innerHTML = '';
+            if(db.habits.length === 0) list.innerHTML = '<p class="text-slate-400 italic text-sm">Adicione um hábito para começar.</p>';
+            db.habits.forEach(h => {
+                list.innerHTML += `<div class="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-lg mb-2 group"><div class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-300 cursor-pointer hover:border-indigo-400 hover:text-indigo-500 transition"><i class="fas fa-check"></i></div><span class="flex-1 text-sm font-medium text-slate-700">${h.text}</span><button onclick="deleteHabit(${h.id})" class="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"><i class="fas fa-trash"></i></button></div>`;
             });
         }
 
         // --- ACTIONS ---
-        function addDailyGoal() {
-            const text = prompt("Nova Meta:");
-            if(text) {
-                db.goals.daily.push({id: Date.now(), text: text, done: false, type: 'manual'});
-                saveDB(); renderDaily();
-            }
-        }
-        function toggleGoal(type, id) {
-            const g = db.goals[type].find(x => x.id === id);
-            if(g) { g.done = !g.done; saveDB(); if(type==='daily') renderDaily(); }
-        }
-        function deleteGoal(type, id) {
-            db.goals[type] = db.goals[type].filter(x => x.id !== id);
-            saveDB(); if(type==='daily') renderDaily();
-        }
-        function addTask() {
-            const input = document.getElementById('new-task-input');
-            if(input.value.trim()) {
-                db.tasks.push({id: Date.now(), text: input.value, done: false, date: new Date().toISOString().split('T')[0]});
-                input.value = '';
-                saveDB(); renderTasks();
-            }
-        }
-        function toggleTask(id) {
-            const t = db.tasks.find(x => x.id === id);
-            if(t) { t.done = !t.done; saveDB(); renderTasks(); }
-        }
-        function deleteTask(id) {
-            db.tasks = db.tasks.filter(x => x.id !== id);
-            saveDB(); renderTasks();
-        }
+        function addDailyGoal() { const t = prompt("Nova meta do dia:"); if(t) { db.goals.daily.push({id:Date.now(), text:t, done:false}); saveDB(); renderDaily(); } }
+        function toggleGoal(type, id) { const g = db.goals[type].find(x=>x.id===id); if(g){g.done=!g.done; saveDB(); renderDaily();} }
+        function deleteGoal(type, id) { db.goals[type] = db.goals[type].filter(x=>x.id!==id); saveDB(); renderDaily(); }
+        
+        function addTask() { const t = document.getElementById('new-task-input').value; if(t){ db.tasks.push({id:Date.now(), text:t, done:false}); document.getElementById('new-task-input').value=''; saveDB(); renderTasks(); } }
+        function toggleTask(id) { const t = db.tasks.find(x=>x.id===id); if(t){t.done=!t.done; saveDB(); renderTasks();} }
+        function deleteTask(id) { db.tasks = db.tasks.filter(x=>x.id!==id); saveDB(); renderTasks(); }
+
         function addTransaction() {
             const type = document.getElementById('trans-type').value;
             const val = parseFloat(document.getElementById('trans-val').value);
             const desc = document.getElementById('trans-desc').value;
-            if(desc && val) {
-                db.finances.transactions.push({id: Date.now(), type, val, desc, cat: 'Geral', date: new Date().toISOString()});
-                saveDB(); renderFinances();
-            }
+            if(desc && !isNaN(val)) { db.finances.transactions.push({id:Date.now(), type, val, desc}); saveDB(); renderFinances(); document.getElementById('trans-desc').value=''; document.getElementById('trans-val').value=''; }
         }
-        function addGlobalGoal(cat) {
-            const text = prompt(`Nova meta para ${cat}:`);
-            if(text) {
-                db.goals.global.push({id: Date.now(), category: cat, text: text, progress: 0});
-                saveDB(); renderGoals();
-            }
-        }
-        function updateGoalProgress(id) {
-            const g = db.goals.global.find(x => x.id === id);
-            const newProg = prompt("Nova porcentagem (0-100):", g.progress);
-            if(newProg !== null) {
-                g.progress = parseInt(newProg);
-                saveDB(); renderGoals();
-            }
-        }
+        function deleteTransaction(id) { db.finances.transactions = db.finances.transactions.filter(x=>x.id!==id); saveDB(); renderFinances(); }
 
-        // --- CALENDAR & WEEKLY (Simples Render placeholders) ---
-        function renderMonthly() { 
-            const grid = document.getElementById('calendar-grid'); grid.innerHTML = '';
-            for(let i=1;i<=30;i++) grid.innerHTML += `<div class="calendar-day p-2 text-sm text-slate-600">${i}</div>`;
+        function addGlobalGoal(cat) { const t = prompt("Nova meta:"); if(t) { db.goals.global.push({id:Date.now(), category:cat, text:t, progress:0}); saveDB(); renderGoals(); } }
+        function deleteGlobalGoal(id) { db.goals.global = db.goals.global.filter(x=>x.id!==id); saveDB(); renderGoals(); }
+        function updateGoalProgress(id) { const g = db.goals.global.find(x=>x.id===id); const p = prompt("Novo progresso (0 a 100):", g.progress); if(p!==null && !isNaN(p)) { g.progress = Math.min(100, Math.max(0, parseInt(p))); saveDB(); renderGoals(); } }
+
+        function addHabit() { const t = prompt("Novo hábito:"); if(t) { db.habits.push({id:Date.now(), text:t}); saveDB(); renderRoutine(); } }
+        function deleteHabit(id) { db.habits = db.habits.filter(x=>x.id!==id); saveDB(); renderRoutine(); }
+
+        // --- SYSTEM ---
+        function exportData() {
+            const dataStr = JSON.stringify(db);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const link = document.createElement('a');
+            link.href = dataUri; link.download = 'lifeos_backup.json'; link.click();
         }
-        function renderWeekly() {
-            const container = document.getElementById('weekly-cards'); container.innerHTML = '';
-            ['Seg','Ter','Qua','Qui','Sex','Sab','Dom'].forEach(d => {
-                container.innerHTML += `<div class="bg-white p-4 rounded-xl border border-slate-100 min-h-[150px]"><h3 class="font-bold text-slate-700 border-b border-slate-50 pb-2 mb-2">${d}</h3></div>`;
-            });
+        function importData(input) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if(confirm("Isso substituirá seus dados atuais. Continuar?")) {
+                    db = JSON.parse(e.target.result);
+                    saveDB(); location.reload();
+                }
+            };
+            reader.readAsText(file);
         }
-        function renderRoutine() {
-            document.getElementById('habit-tracker-container').innerHTML = '<p class="text-slate-500">Seus hábitos aparecerão aqui.</p>';
-        }
+        function hardReset() { if(confirm("ATENÇÃO: Isso apagará TODOS os dados. Continuar?")) { localStorage.removeItem(DB_KEY); location.reload(); } }
 
         // --- AI CHAT ---
-        function toggleAIChat() {
-            const win = document.getElementById('ai-chat-window');
-            win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
-            if(win.style.display === 'flex') win.classList.add('open');
-        }
+        function toggleAIChat() { const w = document.getElementById('ai-chat-window'); w.style.display = w.style.display==='flex'?'none':'flex'; if(w.style.display==='flex') w.classList.add('open'); }
         function handleAIChat(e) {
-            e.preventDefault();
-            const input = document.getElementById('ai-chat-input');
-            const list = document.getElementById('ai-chat-messages');
-            const msg = input.value;
-            if(!msg) return;
-            
-            // User Msg
-            list.innerHTML += `<div class="flex justify-end"><div class="bg-indigo-600 text-white p-3 rounded-2xl rounded-tr-none text-sm max-w-[85%] shadow-sm">${msg}</div></div>`;
-            input.value = '';
-            
-            // Bot Response (Simulated)
+            e.preventDefault(); const i = document.getElementById('ai-chat-input'); const m = i.value; if(!m)return;
+            const l = document.getElementById('ai-chat-messages');
+            l.innerHTML += `<div class="flex justify-end"><div class="bg-indigo-600 text-white p-3 rounded-2xl rounded-tr-none text-sm max-w-[85%] shadow-sm">${m}</div></div>`;
+            i.value = '';
             setTimeout(() => {
-                let reply = "Interessante! Vou anotar isso.";
-                if(msg.includes('meta')) reply = "Definir metas claras aumenta sua chance de sucesso em 42%. Que tal quebrar essa meta em passos menores?";
-                if(msg.includes('estud')) reply = "Para estudos, recomendo sessões de 25 minutos (Pomodoro). Quer iniciar o timer?";
-                if(msg.includes('dinheiro') || msg.includes('gasto')) reply = "Estou monitorando suas finanças. Lembre-se da regra 50/30/20.";
-                
-                list.innerHTML += `<div class="flex justify-start"><div class="bg-white border border-slate-200 text-slate-700 p-3 rounded-2xl rounded-tl-none text-sm max-w-[85%] shadow-sm">${reply}</div></div>`;
-                list.scrollTop = list.scrollHeight;
-            }, 800);
+                l.innerHTML += `<div class="flex justify-start"><div class="bg-white p-3 rounded-2xl rounded-tl-none text-sm shadow-sm text-slate-700 border border-slate-100">Entendi! Vou processar isso. (IA Simulada)</div></div>`;
+                l.scrollTop = l.scrollHeight;
+            }, 600);
         }
 
         // --- TIMER ---
-        let timerTime = 25 * 60; let timerRunning = false; let timerInt;
+        let tTime = 25*60; let tInt; let tRun = false;
         function toggleStudyTimer() {
-            if(timerRunning) { clearInterval(timerInt); timerRunning = false; document.getElementById('nexus-timer-btn').innerText = "Focar"; }
-            else {
-                timerRunning = true; document.getElementById('nexus-timer-btn').innerText = "Pausar";
-                timerInt = setInterval(() => {
-                    timerTime--;
-                    const m = Math.floor(timerTime/60).toString().padStart(2,'0');
-                    const s = (timerTime%60).toString().padStart(2,'0');
-                    document.getElementById('nexus-timer').innerText = `${m}:${s}`;
-                    if(timerTime <= 0) { clearInterval(timerInt); alert("Tempo esgotado!"); timerRunning = false; timerTime = 25*60; }
-                }, 1000);
-            }
+            if(tRun) { clearInterval(tInt); tRun=false; document.getElementById('nexus-timer-btn').innerText="Focar"; }
+            else { tRun=true; document.getElementById('nexus-timer-btn').innerText="Pausar"; tInt=setInterval(()=>{ tTime--; const m=Math.floor(tTime/60).toString().padStart(2,'0'); const s=(tTime%60).toString().padStart(2,'0'); document.getElementById('nexus-timer').innerText=`${m}:${s}`; if(tTime<=0){clearInterval(tInt);tRun=false;alert("Tempo Esgotado!");tTime=25*60;} },1000); }
         }
 
-        // Init
         init();
     </script>
 </body>
-
 </html>
